@@ -1,4 +1,5 @@
-import { isAbsoluteUrl, combineUrl } from './util'
+import { isAbsoluteUrl, combineUrl, serializeUrl } from './util'
+import { ALLOW_CACHE_METHODS } from './constants'
 import InterceptorFactory from './interceptorFactory'
 
 const DEFAULT_CONFIG = {
@@ -16,12 +17,18 @@ const mergeConfig = (originalConfig, customConfig) => {
 }
 
 export default class ERest {
-  constructor() {
+  constructor(customConfig) {
     this.config = DEFAULT_CONFIG
+    this.cache = {}
     this.interceptor = {
       request: new InterceptorFactory(),
       response: new InterceptorFactory(),
     }
+    this.setConfig(customConfig)
+  }
+
+  setConfig(config) {
+    this.config = mergeConfig(this.config, config)
   }
 
   request(config) {
@@ -37,6 +44,7 @@ export default class ERest {
     })
     const chains = [...requestChains, fetchAdapter, undefined, ...responseChains]
     while (chains.length) {
+      // 这里实际是将多个interceptor通过promise的fulfilled和rejected状态一层层的包住 实现中间件的效果
       promise = promise.then(chains.shift(), chains.shift())
     }
     return promise
@@ -55,16 +63,52 @@ export default class ERest {
   delete() {}
 }
 
+const cache = Object.create(null)
+
 const fetchAdapter = async (config) => {
-  const { method, baseUrl, url, adapter } = config
+  const { method, baseUrl, adapter } = config
   // 拼接url
-  const fullUrl = baseUrl && !isAbsoluteUrl
-    ? combineUrl(baseUrl, url)
+  let url = baseUrl && !isAbsoluteUrl(config.url)
+    ? combineUrl(baseUrl, config.url)
     : baseUrl
   // 序列化query
-  // url =
-  await adapter({
-    method,
-    url: fullUrl,
-  })
+  url = serializeUrl(url, config.params || config.query, config.paramsSerializer)
+
+  // 是否允许缓存
+  const allowCache = ALLOW_CACHE_METHODS.includes(method)
+  const cacheResponse = cache[url]
+  if (allowCache && cacheResponse) {
+    switch (config.cache) {
+      case 'default':
+        return {
+          ...cacheResponse,
+          usingCache: true,
+        }
+      case 'clear':
+        delete cache[url]
+        return {
+          ...cacheResponse,
+          using: true,
+        }
+      case 'no-cache':
+      default: break
+    }
+  }
+
+  try {
+    const response = await adapter({
+      method,
+      url,
+    })
+    if (response.ok) {
+      if (allowCache && !cache[url]) {
+        cache[url] = response
+      }
+      return response
+    } else {
+      throw new Error(`request failed with status code ${response.status}`)
+    }
+  } catch (e) {
+    throw e
+  }
 }
