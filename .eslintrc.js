@@ -6,7 +6,7 @@ module.exports = {
       jsx: true,
     },
     sourceType: 'module',
-    ecmaVersion: 7,
+    // ecmaVersion: 7,
     // parser: 'babel-eslint',
   },
   env: {
@@ -24,19 +24,17 @@ module.exports = {
     'react',
     'jsx-a11y',
   ],
-  // extends: [
-  //   '@zaihui/vue'
-  // ],
   // add your custom rules here
   rules: {
     // allow async-await
     'generator-star-spacing': 'off',
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'react/jsx-uses-react': 1,
     'no-console': 2,
-    'react/prefer-es6-class': 2,
     'no-empty': 0,
+    'react/jsx-uses-react': 1,
+    'react/prefer-es6-class': 2,
+    'react/jsx-uses-vars': 1,
   },
   settings: {
     'import/ignore': [
