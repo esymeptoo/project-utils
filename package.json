@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --inline",
     "build": "cross-env NODE_ENV=production webpack",
-    "lint:eslint": "eslint --ext .js src"
+    "lint:eslint": "eslint --ext .js src",
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -19,11 +20,14 @@
     "@babel/runtime": "^7.3.1",
     "autoprefixer": "^9.4.7",
     "babel-eslint": "^10.0.1",
+    "babel-jest": "^24.1.0",
     "babel-loader": "^8.0.5",
     "babel-plugin-transform-decorators-legacy": "^1.3.5",
     "babel-plugin-transform-runtime": "^6.23.0",
     "cross-env": "^5.2.0",
     "css-loader": "^2.1.0",
+    "enzyme": "^3.8.0",
+    "enzyme-adapter-react-16": "^1.9.1",
     "eslint": "^5.13.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-airbnb-base": "^13.1.0",
@@ -33,6 +37,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.12.4",
     "html-webpack-plugin": "^3.2.0",
+    "jest": "^24.1.0",
     "less-loader": "^4.1.0",
     "pre-commit": "^1.2.2",
     "style-loader": "^0.23.1",
@@ -46,6 +51,7 @@
     "react-dom": "^16.8.1"
   },
   "pre-commit": [
-    "lint:eslint"
+    "lint:eslint",
+    "test"
   ]
 }

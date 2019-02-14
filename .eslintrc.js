@@ -35,6 +35,8 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'react/jsx-uses-react': 1,
     'no-console': 2,
+    'react/prefer-es6-class': 2,
+    'no-empty': 0,
   },
   settings: {
     'import/ignore': [
