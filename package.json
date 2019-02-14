@@ -7,8 +7,7 @@
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --inline",
     "build": "cross-env NODE_ENV=production webpack",
     "lint:eslint": "eslint --ext .js src",
-    "test": "jest",
-    "precommit": "pre-commit"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
